@@ -31,9 +31,18 @@ class InnerList extends React.Component {
 class App extends React.Component {
   state = initialData;
 
-  onDragEnd = (result) => {
+  onDragEnd = (result, provided) => {
     document.body.style.color = "inherit";
     document.body.style.backgroundColor = "inherit";
+
+    // const message = update.destination
+    //   ? `you have moved the task from position ${
+    //       result.source.index + 1
+    //     } to position ${update.destination.index + 1}`
+    //   : `the task has been returned to its starting position of ${
+    //       result.source.index + 1
+    //     }`;
+    // provided.announce(message);
 
     this.setState({
       homeIndex: null,
@@ -110,20 +119,28 @@ class App extends React.Component {
     this.setState(newState);
   };
 
-  onDragStart = (start) => {
+  onDragStart = (start, provided) => {
     document.body.style.color = "orange";
     document.body.style.transition = "background-color 0.2s ease";
+    provided.announce(
+      `you have lifted the task in position ${start.source.index + 1}`
+    );
 
     const homeIndex = this.state.columnOrder.indexOf(start.source.droppableId);
     this.setState({ homeIndex });
   };
 
-  onDragUpdate = (update) => {
+  onDragUpdate = (update, provided) => {
     const { destination } = update;
     const opacity = destination
       ? destination.index / Object.keys(this.state.tasks).length
       : 0;
     document.body.style.backgroundColor = `rgba(153, 141, 217, ${opacity})`;
+
+    const message = update.destination
+      ? `you have moved the task to position ${update.destination.index + 1}`
+      : `you are currently not over a droppable area`;
+    provided.announce(message);
   };
 
   render() {
